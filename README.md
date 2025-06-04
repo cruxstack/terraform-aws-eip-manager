@@ -15,7 +15,7 @@ disassociated, returning to the pool for use by other instances.
 - **Auto-Assignment of EIPs**: Automatically assigns Elastic IPs (EIPs) from a
   defined pool to EC2 instances when they reach the "running" state.
 - **Auto-Release of EIPs**: Automatically disassociates EIPs from instances when
-they are stopped or terminated, returning the EIPs back to the pool.
+  they are stopped or terminated, returning the EIPs back to the pool.
 - **Tag-Based EIP Pools**: Uses tags to define pools of EIPs. Each pool can have
   multiple EIPs, and instances can be assigned an EIP from a specific pool based
   on their tags.
