@@ -159,22 +159,22 @@ resource "aws_iam_role" "this" {
     }]
   })
 
-  managed_policy_arns = [
-    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-  ]
-
-  inline_policy {
-    name   = "access"
-    policy = data.aws_iam_policy_document.this[0].json
-  }
-
   tags = module.eip_manager_label.tags
+}
+
+resource "aws_iam_role_policy" "this" {
+  count = module.this.enabled ? 1 : 0
+
+  name   = "service-access"
+  role   = aws_iam_role.this[0].name
+  policy = data.aws_iam_policy_document.this[0].json
 }
 
 data "aws_iam_policy_document" "this" {
   count = module.this.enabled ? 1 : 0
 
   statement {
+    sid    = "AllowManagingEc2InstanceEIP"
     effect = "Allow"
     actions = [
       "ec2:DescribeAddresses",
@@ -185,6 +185,19 @@ data "aws_iam_policy_document" "this" {
     ]
     resources = [
       "*",
+    ]
+  }
+
+  statement {
+    sid    = "AllowLambdaBasicExecution"
+    effect = "Allow"
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+    resources = [
+      "*"
     ]
   }
 }
