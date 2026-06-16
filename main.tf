@@ -58,7 +58,7 @@ resource "aws_lambda_permission" "this" {
 
 module "source_code" {
   source  = "cruxstack/artifact-packager/docker"
-  version = "1.3.2"
+  version = "1.4.0"
   count   = module.this.enabled ? 1 : 0
 
   artifact_src_path      = "/tmp/package.zip"
