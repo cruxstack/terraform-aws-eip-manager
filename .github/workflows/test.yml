@@ -1,0 +1,70 @@
+name: test
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  TF_IN_AUTOMATION: true
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+
+      - name: Cache Terraform Plugins
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ${{ runner.temp }}/.terraform.d/plugin-cache
+          key: tf-plugins-${{ runner.os }}-${{ hashFiles('**/.terraform.lock.hcl') }}
+
+      - name: Initialize Terraform
+        run:  terraform init
+
+      - name: Suggest Terraform Format
+        if: github.event_name == 'pull_request'
+        uses: reviewdog/action-suggester@aa38384ceb608d00f84b4690cacc83a5aba307ff # v1.24.0
+        with:
+          tool_name: terraform-fmt
+          level: warning
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          fail_level: error
+
+      - name: Check Terraform Format
+        if: github.event_name == 'push'
+        run: terraform fmt -recursive -check
+
+      - name: Validate Terraform
+        uses: reviewdog/action-terraform-validate@4aaf1db71358f4f35ff414d656334e0ce3c34ce5 # v1.17.3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          level: warning
+          fail_level: error
+
+      # - name: Lint Terraform
+      #   uses: reviewdog/action-tflint@9cbfc0aeae4af75fb73e8d5b6efbcd82e9483532 # v1.25.0
+      #   with:
+      #     reporter: github-pr-review
+      #     filter_mode: nofilter
+      #     fail_level: error
+
+      - name: Lint GitHub Actions
+        uses: reviewdog/action-actionlint@6fb7acc99f4a1008869fa8a0f09cfca740837d9d # v1.72.0
+        with:
+          reporter: github-pr-check
+          fail_level: error
+          filter_mode: nofilter
