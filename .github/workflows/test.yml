@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: setup terraform
         uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
@@ -36,7 +36,7 @@ jobs:
 
       - name: Suggest Terraform Format
         if: github.event_name == 'pull_request'
-        uses: reviewdog/action-suggester@aa38384ceb608d00f84b4690cacc83a5aba307ff # v1.24.0
+        uses: reviewdog/action-suggester@2558ba17e65a9039e73764a73009fc05fef28a46 # v1.24.3
         with:
           tool_name: terraform-fmt
           level: warning
@@ -48,7 +48,7 @@ jobs:
         run: terraform fmt -recursive -check
 
       - name: Validate Terraform
-        uses: reviewdog/action-terraform-validate@4aaf1db71358f4f35ff414d656334e0ce3c34ce5 # v1.17.3
+        uses: reviewdog/action-terraform-validate@6365bf83a0ea1fb7966229f8a59849fd82cc2de2 # v1.17.4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
